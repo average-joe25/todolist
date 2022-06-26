@@ -1,31 +1,48 @@
-const express=require("express");
-const body_parser=require("body-parser");
-const app=express();
-const date=require(__dirname+"/date.js");
-app.set("view engine","ejs");
-app.use(body_parser.urlencoded({extended:true}));
+//jshint esversion:6
+
+const express = require("express");
+const bodyParser = require("body-parser");
+const date = require(__dirname + "/date.js");
+
+const app = express();
+
+app.set('view engine', 'ejs');
+
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
-var tasks=["wake up"];
-var work=[];
-app.get("/",function(req,res){
-  const day=date.getDate();
-  res.render('index',{day:day,tasks:tasks});
+
+const items = ["Buy Food", "Cook Food", "Eat Food"];
+const workItems = [];
+
+app.get("/", function(req, res) {
+
+const day = date.getDate();
+
+  res.render("list", {listTitle: day, newListItems: items});
 
 });
-app.get("/work",function(req,res){
-  res.render('index',{day:"work",tasks:work});
-});
-app.post("/",function(req,res){
-  const val=req.body.taskval;
-  if(req.body.list==='work'){
-    work.push(val);
+
+app.post("/", function(req, res){
+
+  const item = req.body.newItem;
+
+  if (req.body.list === "Work") {
+    workItems.push(item);
     res.redirect("/work");
-  }
-  else{
-    tasks.push(val);
+  } else {
+    items.push(item);
     res.redirect("/");
   }
 });
-app.listen(3000,function (){
-  console.log("server is running");
+
+app.get("/work", function(req,res){
+  res.render("list", {listTitle: "Work List", newListItems: workItems});
+});
+
+app.get("/about", function(req, res){
+  res.render("about");
+});
+
+app.listen(3000, function() {
+  console.log("Server started on port 3000");
 });
